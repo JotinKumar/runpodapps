@@ -34,9 +34,9 @@ Troubleshooting releases:
 
 ## Release process
 
-Releases are tag-driven and/or GitHub Releases. The workflow builds and pushes both variants:
+Releases are tag-driven and/or GitHub Releases. The workflow builds and pushes:
 
-- `runpod/comfyui:vX.Y.Z` and `runpod/comfyui:latest`
+- `jotinkumar/runpodapps:vX.Y.Z` and `jotinkumar/runpodapps:latest`
 - `runpod/comfyui:vX.Y.Z-5090` and `runpod/comfyui:latest-5090`
 
 Steps:
@@ -55,8 +55,8 @@ Steps:
 Troubleshooting:
 
 - Do not override `tags` in the workflow; they are defined in `docker-bake.hcl`.
-- Use the “Dev Build” workflow to test changes without tagging.
-- Check container logs under `/workspace/runpod-slim/*.log` if runtime issues occur.
+- Use the "Dev Build" workflow to test changes without tagging.
+- Check container logs in `/workspace` directories (e.g., `/workspace/comfy/comfyui.log`) if runtime issues occur.
 
 ## Opening PRs
 

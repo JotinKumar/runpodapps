@@ -16,8 +16,8 @@ target "regular" {
   inherits = ["common"]
   dockerfile = "Dockerfile"
   tags = [
-    "runpod/comfyui:${TAG}",
-    "runpod/comfyui:latest",
+    "jotinkumar/runpodapps:${TAG}",
+    "jotinkumar/runpodapps:latest",
   ]
 }
 
