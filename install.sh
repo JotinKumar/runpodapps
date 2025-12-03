@@ -1,13 +1,13 @@
 #!/bin/bash
 set -e
 
-echo "========================================="
-echo "ComfyUI Installation Script"
-echo "Base: runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04"
-echo "========================================="
+echo "=========================================="
+echo "  ComfyUI Installation for RunPod"
+echo "=========================================="
+echo ""
 
-# 0. Install required system dependencies
-echo "Step 0: Installing system dependencies..."
+# Install system dependencies
+echo "[1/8] Installing system dependencies..."
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get install -y --no-install-recommends \
@@ -17,48 +17,43 @@ apt-get install -y --no-install-recommends \
     ffmpeg
 apt-get clean
 rm -rf /var/lib/apt/lists/*
+echo "✓ System dependencies installed"
+echo ""
 
-# 1. Set default path to /workspace
-echo "Step 1: Setting up workspace..."
+# Clone ComfyUI
+echo "[2/8] Cloning ComfyUI..."
 cd /workspace
-
-# 2. Clone ComfyUI
-echo "Step 2: Cloning ComfyUI..."
 if [ ! -d "ComfyUI" ]; then
     git clone https://github.com/comfyanonymous/ComfyUI.git
-    echo "✓ ComfyUI cloned"
 else
-    echo "✓ ComfyUI already exists"
+    echo "ComfyUI already exists, skipping clone"
 fi
-
 cd ComfyUI
+echo "✓ ComfyUI ready"
+echo ""
 
-# 3. Create virtual environment (without system-site-packages)
-echo "Step 3: Creating virtual environment..."
+# Create virtual environment
+echo "[3/8] Creating virtual environment..."
 python3 -m venv comfyvenv
-echo "✓ Virtual environment created"
-
-# 4. Activate venv
-echo "Step 4: Activating virtual environment..."
 source comfyvenv/bin/activate
+echo "✓ Virtual environment created"
+echo ""
 
-# 5. Install PyTorch in venv
-echo "Step 5: Installing PyTorch in venv (this will take 5-10 minutes)..."
-pip install --no-cache-dir -v torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
-echo "✓ PyTorch installed in venv"
+# Install PyTorch
+echo "[4/8] Installing PyTorch (5-10 minutes)..."
+pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
+echo "✓ PyTorch installed"
+echo ""
 
-# 6. Install ComfyUI requirements
-echo "Step 6: Installing ComfyUI requirements..."
-pip install --no-cache-dir -v -r requirements.txt
-echo "✓ ComfyUI requirements installed"
+# Install ComfyUI requirements
+echo "[5/8] Installing ComfyUI requirements..."
+pip install --no-cache-dir -r requirements.txt
+pip install --no-cache-dir xformers --index-url https://download.pytorch.org/whl/cu124
+echo "✓ Requirements installed"
+echo ""
 
-# 6b. Install compatible xformers for PyTorch 2.6.0+cu124
-echo "Step 6b: Installing compatible xformers..."
-pip install --no-cache-dir -v xformers --index-url https://download.pytorch.org/whl/cu124
-echo "✓ xformers installed"
-
-# 7. Install custom nodes
-echo "Step 7: Installing custom nodes..."
+# Clone custom nodes
+echo "[6/8] Cloning custom nodes..."
 cd custom_nodes
 
 declare -a custom_nodes=(
@@ -76,39 +71,40 @@ declare -a custom_nodes=(
 for repo in "${custom_nodes[@]}"; do
     node_name=$(basename "$repo" .git)
     if [ ! -d "$node_name" ]; then
-        echo "  Cloning $node_name..."
-        git clone "$repo" || echo "  Warning: Failed to clone $node_name"
-    else
-        echo "  ✓ $node_name already exists"
+        git clone "$repo" 2>&1 | grep -q "fatal" && echo "  ⚠ Failed: $node_name" || echo "  ✓ $node_name"
     fi
 done
+echo "✓ Custom nodes ready"
+echo ""
 
-echo "✓ Custom nodes installed"
-
-# 8. Install custom node requirements
-echo "Step 8: Installing custom node requirements..."
+# Install custom node requirements
+echo "[7/8] Installing custom node dependencies..."
 for node_dir in */; do
     if [ -f "$node_dir/requirements.txt" ]; then
-        echo "  Installing requirements for $node_dir"
-        pip install --no-cache-dir -v -r "$node_dir/requirements.txt" || echo "  Warning: Some packages failed for $node_dir"
+        pip install --no-cache-dir -r "$node_dir/requirements.txt" > /dev/null 2>&1 || true
     fi
 done
+echo "✓ Dependencies installed"
+echo ""
 
-# Configure was-node-suite ffmpeg path
+# Configure ffmpeg for was-node-suite
+echo "[8/8] Configuring custom nodes..."
 if [ -d "was-node-suite-comfyui" ]; then
-    echo "Configuring was-node-suite ffmpeg path..."
     echo '{"ffmpeg_bin_path": "/usr/bin/ffmpeg"}' > was-node-suite-comfyui/was_suite_config.json
 fi
 
+echo "✓ Configuration complete"
+
 deactivate
 
-echo "========================================="
-echo "✓ Installation Complete!"
-echo "========================================="
 echo ""
-echo "ComfyUI installed at: /workspace/ComfyUI"
-echo "Virtual environment: /workspace/ComfyUI/comfyvenv"
+echo "=========================================="
+echo "  ✓ Installation Complete!"
+echo "=========================================="
 echo ""
-echo "To start ComfyUI, run:"
-echo "  /workspace/start.sh"
-echo "========================================="
+echo "Location: /workspace/ComfyUI"
+echo "Venv: /workspace/ComfyUI/comfyvenv"
+echo ""
+echo "Start ComfyUI:"
+echo "  wget https://raw.githubusercontent.com/JotinKumar/runpodapps/main/start.sh && chmod +x start.sh && ./start.sh"
+echo "=========================================="

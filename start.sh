@@ -1,19 +1,19 @@
 #!/bin/bash
 
-echo "========================================="
-echo "Starting ComfyUI"
-echo "========================================="
+echo "==========================================="
+echo "  Starting ComfyUI"
+echo "==========================================="
+echo ""
 
-# Navigate to ComfyUI directory
-cd /workspace/ComfyUI
+cd /workspace/ComfyUI || { echo "Error: ComfyUI not found"; exit 1; }
 
-# Activate virtual environment
-echo "Activating virtual environment..."
-source comfyvenv/bin/activate
+source comfyvenv/bin/activate || { echo "Error: Virtual environment not found"; exit 1; }
 
-# Start ComfyUI
+echo "✓ Environment activated"
+echo ""
 echo "Starting ComfyUI on port 8188..."
-echo "Access ComfyUI at: http://your-pod-ip:8188"
-echo "========================================="
+echo "Access at: https://<pod-id>-8188.proxy.runpod.net"
+echo "==========================================="
+echo ""
 
 python main.py --listen 0.0.0.0 --port 8188
