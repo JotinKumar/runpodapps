@@ -7,7 +7,7 @@ echo ""
 
 cd /workspace/ComfyUI || { echo "Error: ComfyUI not found"; exit 1; }
 
-source comfyvenv/bin/activate || { echo "Error: Virtual environment not found"; exit 1; }
+source /workspace/ComfyUI/comfyvenv/bin/activate || { echo "Error: Virtual environment not found"; exit 1; }
 
 # Get RunPod Pod ID from environment
 POD_ID=${RUNPOD_POD_ID:-"unknown"}
