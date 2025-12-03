@@ -94,6 +94,12 @@ for node_dir in */; do
     fi
 done
 
+# Configure was-node-suite ffmpeg path
+if [ -d "was-node-suite-comfyui" ]; then
+    echo "Configuring was-node-suite ffmpeg path..."
+    echo '{"ffmpeg_bin_path": "/usr/bin/ffmpeg"}' > was-node-suite-comfyui/was_suite_config.json
+fi
+
 deactivate
 
 echo "========================================="
