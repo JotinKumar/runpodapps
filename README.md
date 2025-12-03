@@ -1,6 +1,6 @@
-# ComfyUI Simple Installation
+# ComfyUI Installation for RunPod
 
-Single-app setup for ComfyUI on RunPod PyTorch base image.
+Simple, reliable ComfyUI setup for RunPod PyTorch base image.
 
 ## Requirements
 
@@ -14,7 +14,7 @@ SSH into your RunPod pod and run:
 
 ```bash
 cd /workspace
-wget https://raw.githubusercontent.com/JotinKumar/comfyui-simple/main/install.sh
+wget https://raw.githubusercontent.com/JotinKumar/runpodapps/main/install.sh
 chmod +x install.sh
 ./install.sh
 ```
