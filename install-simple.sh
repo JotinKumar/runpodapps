@@ -50,8 +50,12 @@ echo "✓ PyTorch installed in venv"
 # 6. Install ComfyUI requirements
 echo "Step 6: Installing ComfyUI requirements..."
 pip install --no-cache-dir -v -r requirements.txt
-pip install --no-cache-dir -v xformers
 echo "✓ ComfyUI requirements installed"
+
+# 6b. Install compatible xformers for PyTorch 2.6.0+cu124
+echo "Step 6b: Installing compatible xformers..."
+pip install --no-cache-dir -v xformers --index-url https://download.pytorch.org/whl/cu124
+echo "✓ xformers installed"
 
 # 7. Install custom nodes
 echo "Step 7: Installing custom nodes..."
