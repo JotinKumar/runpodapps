@@ -16,8 +16,8 @@ target "regular" {
   inherits = ["common"]
   dockerfile = "Dockerfile"
   tags = [
-    "yourusername/runpodapps:${TAG}",
-    "yourusername/runpodapps:latest",
+    "jotinkumar/runpodapps:${TAG}",
+    "jotinkumar/runpodapps:latest",
   ]
 }
 
@@ -25,7 +25,7 @@ target "regular" {
 target "dev" {
   inherits = ["common"]
   dockerfile = "Dockerfile"
-  tags = ["runpod/comfyui:dev"]
+  tags = ["runpod/runpodapps:dev"]
   output = ["type=docker"]
 }
 
@@ -33,5 +33,5 @@ target "dev" {
 target "devpush" {
   inherits = ["common"]
   dockerfile = "Dockerfile"
-  tags = ["runpod/comfyui:dev"]
+  tags = ["runpod/runpodapps:dev"]
 }

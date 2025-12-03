@@ -10,7 +10,7 @@ This document outlines how to work in this repository from a developer point of 
 - **Package manager**: pip (dependencies pre-installed in Docker, apps installed at runtime)
 - **Node.js**: 20.x (for Pinokio)
 - **Tools bundled**: FileBrowser (port 8080), JupyterLab (port 8888), OpenSSH server (port 22), FFmpeg (NVENC), common CLI tools
-- **Primary apps**: 
+- **Primary apps**:
   - ComfyUI with 10 pre-configured custom nodes (port 8188)
   - Pinokio AI installer (port 42424)
   - Ollama local LLM server (port 11434)
@@ -76,12 +76,14 @@ Build args and env:
 Startup is handled by `start.sh`:
 
 **Infrastructure Services:**
+
 - Initializes SSH server. If `PUBLIC_KEY` is set, it is added to `~/.ssh/authorized_keys`; otherwise a random root password is generated and printed to logs.
 - Exports selected env vars broadly to `/etc/environment`, PAM, and `~/.ssh/environment` for non-interactive shells.
 - Initializes and starts FileBrowser on port 8080 (root `/workspace`). Default admin user is created on first run.
 - Starts JupyterLab on port 8888, root at `/workspace`. Token set via `JUPYTER_PASSWORD` if provided.
 
 **ComfyUI Setup:**
+
 - Ensures `comfyui_args.txt` exists.
 - Clones ComfyUI and 10 preselected custom nodes on first run into `/workspace/comfy`.
 - Creates a Python 3.12 virtual environment (`comfyvenv`) with `--system-site-packages` to access pre-installed dependencies.
@@ -89,19 +91,22 @@ Startup is handled by `start.sh`:
 - Starts ComfyUI with fixed args `--listen 0.0.0.0 --port 8188` plus any custom args from `comfyui_args.txt`.
 
 **Pinokio Setup:**
+
 - Clones Pinokio repository to `/workspace/pinokio` on first run.
-- Installs dependencies and starts Pinokio server on port 42424 (accessible at http://localhost:42424).
+- Installs dependencies and starts Pinokio server on port 42424 (accessible at <http://localhost:42424>).).
 
 **Ollama Setup:**
+
 - Verifies Ollama binary installation (pre-installed in Docker image).
 - Sets `OLLAMA_MODELS` to `/workspace/ollama` for persistent model storage.
 - Starts Ollama server on port 11434 in background.
 
 **Open WebUI Setup:**
+
 - Clones Open WebUI repository to `/workspace/open-webui` on first run.
 - Creates a Python 3.12 virtual environment (`openwebuivenv`) with `--system-site-packages`.
 - Installs Open WebUI requirements using `pip`.
-- Starts Open WebUI on port 3000, connected to Ollama at http://localhost:11434.
+- Starts Open WebUI on port 3000, connected to Ollama at <http://localhost:11434>.
 
 ## Ports
 
@@ -126,20 +131,24 @@ Recognized at runtime by the start scripts:
 ## Dependency Management
 
 **Architecture:**
+
 - Dependencies are pre-installed in the Docker image (builder stage).
 - Applications are cloned to `/workspace` at runtime for persistence and easy updates.
 
 **Python Setup:**
+
 - Python 3.12 is the default interpreter in the image.
 - Virtual environments use `--system-site-packages` to access pre-installed dependencies while maintaining isolation.
 - Package manager: `pip` (with `--no-cache-dir` for efficient installs).
 
 **Virtual Environments:**
+
 - ComfyUI: `/workspace/comfy/ComfyUI/comfyvenv`
 - Open WebUI: `/workspace/open-webui/openwebuivenv`
 - Both venvs have access to system-installed PyTorch and CUDA packages.
 
 **Custom Nodes:**
+
 - Repos are cloned into `ComfyUI/custom_nodes/`.
 - On first run and subsequent starts, the script attempts to install each node's `requirements.txt`, run `install.py`, or `setup.py` if present.
 
@@ -161,7 +170,7 @@ Recognized at runtime by the start scripts:
 - **ComfyUI Args**: Edit `comfyui_args.txt` – add one CLI arg per line; comments starting with `#` are ignored. These are appended after fixed args.
 - **Custom Nodes**: Add/remove by editing the `CUSTOM_NODES` array in `start.sh`, or pre-bake them into the Dockerfile.
 - **System Packages**: Modify the Dockerfile `apt-get install` lines.
-- **Python Packages**: 
+- **Python Packages**:
   - Pre-install in Dockerfile builder stage for better performance.
   - Or extend installation blocks in `start.sh` after venv activation using `pip install --no-cache-dir`.
 - **Additional Apps**: Follow the pattern used for Pinokio, Ollama, and Open WebUI:
@@ -209,18 +218,21 @@ Recognized at runtime by the start scripts:
 ## Troubleshooting
 
 **ComfyUI Issues:**
+
 - Not reachable on port 8188:
   - Check `/workspace/comfy/comfyui.log` (tailing in foreground).
   - Ensure `comfyui_args.txt` doesn't contain invalid flags (comments with `#` are okay).
   - Verify custom nodes installed correctly - check logs for errors.
 
 **Pinokio Issues:**
+
 - Not starting:
   - Check Node.js installation: `node --version` should show v20.x.
   - Verify `/workspace/pinokio` exists and has write permissions.
   - Check logs for port conflicts on 42424.
 
 **Ollama Issues:**
+
 - Server not responding on port 11434:
   - Verify Ollama binary installed: `ollama --version`.
   - Check if process is running: `ps aux | grep ollama`.
@@ -228,12 +240,14 @@ Recognized at runtime by the start scripts:
   - Verify sufficient disk space for models.
 
 **Open WebUI Issues:**
+
 - Cannot connect on port 3000:
   - Check if Ollama is running first (Open WebUI depends on it).
   - Verify virtual environment created: `/workspace/open-webui/openwebuivenv`.
   - Check for Python package conflicts in logs.
 
 **General Issues:**
+
 - JupyterLab auth:
   - If `JUPYTER_PASSWORD` is unset, Jupyter may allow tokenless or default behavior. Set it explicitly if needed.
 - SSH access:

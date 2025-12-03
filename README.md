@@ -62,7 +62,7 @@ Restart ComfyUI for changes to take effect.
 
 ## 📁 Directory Structure
 
-```
+```text
 /workspace/
 ├── comfy/
 │   ├── ComfyUI/          # ComfyUI installation
@@ -119,6 +119,7 @@ docker buildx bake -f docker-bake.hcl regular --push
 ```
 
 This creates two tags:
+
 - `yourusername/runpodapps:v1.0.0` (or your TAG value)
 - `yourusername/runpodapps:latest`
 
@@ -164,15 +165,18 @@ docker push yourusername/runpodapps:v1.0.0
 ### Step 3: Configure Template Settings
 
 #### Basic Settings
+
 - **Template Name**: `Multi-App Workspace`
 - **Template Type**: Select **"Docker"**
 - **Container Image**: `yourusername/runpodapps:v1.0.0`
 
 #### Container Configuration
+
 - **Container Disk**: `50 GB` (minimum, increase for models)
 - **Volume Path**: `/workspace`
 
 #### Expose HTTP Ports
+
 Add these ports (format: `port/http` with name):
 
 | Port | Name |
@@ -185,11 +189,13 @@ Add these ports (format: `port/http` with name):
 | `8888` | JupyterLab |
 
 #### Expose TCP Ports
-```
+
+```text
 22
 ```
 
-#### Environment Variables (Optional)
+#### Environment Variables (SSH/Jupyter)
+
 | Variable | Value | Description |
 |----------|-------|-------------|
 | `JUPYTER_PASSWORD` | `your-token` | JupyterLab access token |
@@ -223,7 +229,8 @@ Add these ports (format: `port/http` with name):
 ### Step 7: Verify Installation
 
 Check logs for successful startup messages:
-```
+
+```text
 ✓ ComfyUI started
 ✓ Pinokio started
 ✓ Ollama started
@@ -238,6 +245,7 @@ Check logs for successful startup messages:
 ### Services Not Starting
 
 Check logs in `/workspace`:
+
 - ComfyUI: `/workspace/comfy/comfyui.log`
 - Pinokio: `/workspace/pinokio/pinokio.log`
 - Ollama: `/workspace/ollama/ollama.log`
@@ -260,6 +268,7 @@ Increase volume size in pod settings. Models can be large (2-20GB each).
 ### ComfyUI Custom Nodes Failing
 
 Some nodes may need additional dependencies. Install via:
+
 1. SSH into pod
 2. Activate venv: `source /workspace/comfy/ComfyUI/comfyvenv/bin/activate`
 3. Install packages: `pip install <package-name>`
@@ -270,7 +279,7 @@ Some nodes may need additional dependencies. Install via:
 
 ### Project Structure
 
-```
+```text
 .
 ├── Dockerfile              # Multi-stage build
 ├── docker-bake.hcl        # Build configuration
@@ -291,6 +300,7 @@ Some nodes may need additional dependencies. Install via:
 ### Updating Custom Nodes List
 
 Edit both files:
+
 1. `Dockerfile` - Builder stage (for dependencies)
 2. `start.sh` - CUSTOM_NODES array (for runtime installation)
 
@@ -303,6 +313,7 @@ GPLv3 - See [LICENSE](LICENSE) file for details.
 ## 🤝 Contributing
 
 Issues and pull requests welcome! Please ensure:
+
 - Dockerfile builds successfully
 - start.sh passes `bash -n` syntax check
 - All services start correctly in test pod
