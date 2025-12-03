@@ -36,6 +36,7 @@ echo ""
 echo "[3/8] Creating virtual environment..."
 python3 -m venv comfyvenv
 source comfyvenv/bin/activate
+pip install --upgrade pip --quiet
 echo "✓ Virtual environment created"
 echo ""
 
