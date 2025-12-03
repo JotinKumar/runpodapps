@@ -114,6 +114,10 @@ echo "Installing ComfyUI dependencies..."
 pip install --no-cache-dir -r requirements.txt
 pip install --no-cache-dir GitPython opencv-python
 
+# Install compatible torchaudio to avoid library conflicts
+echo "Installing compatible torchaudio..."
+pip install --no-cache-dir torchaudio --index-url https://download.pytorch.org/whl/cu124
+
 # Install custom nodes
 echo "Installing ComfyUI custom nodes..."
 cd custom_nodes
