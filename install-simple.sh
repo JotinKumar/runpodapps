@@ -43,14 +43,14 @@ echo "Step 4: Activating virtual environment..."
 source comfyvenv/bin/activate
 
 # 5. Install PyTorch in venv
-echo "Step 5: Installing PyTorch in venv..."
-pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
+echo "Step 5: Installing PyTorch in venv (this will take 5-10 minutes)..."
+pip install --no-cache-dir -v torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
 echo "✓ PyTorch installed in venv"
 
 # 6. Install ComfyUI requirements
 echo "Step 6: Installing ComfyUI requirements..."
-pip install --no-cache-dir -r requirements.txt
-pip install --no-cache-dir xformers
+pip install --no-cache-dir -v -r requirements.txt
+pip install --no-cache-dir -v xformers
 echo "✓ ComfyUI requirements installed"
 
 # 7. Install custom nodes
@@ -86,7 +86,7 @@ echo "Step 8: Installing custom node requirements..."
 for node_dir in */; do
     if [ -f "$node_dir/requirements.txt" ]; then
         echo "  Installing requirements for $node_dir"
-        pip install --no-cache-dir -r "$node_dir/requirements.txt" || echo "  Warning: Some packages failed for $node_dir"
+        pip install --no-cache-dir -v -r "$node_dir/requirements.txt" || echo "  Warning: Some packages failed for $node_dir"
     fi
 done
 
