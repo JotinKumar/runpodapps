@@ -31,9 +31,9 @@ Access ComfyUI at: `https://<pod-id>-8188.proxy.runpod.net`
 
 ## What Gets Installed
 
-- ComfyUI with PyTorch 2.4.0 + CUDA 12.4 (system-wide)
-- Compatible torchaudio for audio nodes
-- All dependencies installed to system Python
+- ComfyUI with PyTorch 2.4.0 + CUDA 12.4
+- Isolated virtual environment at `/workspace/ComfyUI/comfyvenv`
+- PyTorch and all dependencies installed inside venv
 - 9 popular custom nodes:
   - ComfyUI-Manager
   - ComfyUI-KJNodes
@@ -50,6 +50,7 @@ Access ComfyUI at: `https://<pod-id>-8188.proxy.runpod.net`
 ```text
 /workspace/
 └── ComfyUI/
+    ├── comfyvenv/          # Virtual environment
     ├── custom_nodes/       # Custom nodes
     ├── models/             # Store your models here
     ├── input/              # Input images
@@ -69,7 +70,8 @@ ps aux | grep main.py
 
 ```bash
 cd /workspace/ComfyUI
-python3 main.py --listen 0.0.0.0 --port 8188
+source comfyvenv/bin/activate
+python main.py --listen 0.0.0.0 --port 8188
 ```
 
 ### Restart ComfyUI

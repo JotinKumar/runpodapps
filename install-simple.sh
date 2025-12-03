@@ -33,18 +33,27 @@ fi
 
 cd ComfyUI
 
-# 3. Install ComfyUI requirements (no venv - use system Python)
-echo "Step 3: Installing ComfyUI requirements..."
+# 3. Create virtual environment (without system-site-packages)
+echo "Step 3: Creating virtual environment..."
+python3 -m venv comfyvenv
+echo "✓ Virtual environment created"
+
+# 4. Activate venv
+echo "Step 4: Activating virtual environment..."
+source comfyvenv/bin/activate
+
+# 5. Install PyTorch in venv
+echo "Step 5: Installing PyTorch in venv..."
+pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
+echo "✓ PyTorch installed in venv"
+
+# 6. Install ComfyUI requirements
+echo "Step 6: Installing ComfyUI requirements..."
 pip install --no-cache-dir -r requirements.txt
 pip install --no-cache-dir xformers
 echo "✓ ComfyUI requirements installed"
 
-# 4. Install compatible torchaudio
-echo "Step 4: Installing compatible torchaudio..."
-pip install --no-cache-dir torchaudio --index-url https://download.pytorch.org/whl/cu124
-echo "✓ Torchaudio installed"
-
-# 5. Install custom nodes
+# 7. Install custom nodes
 echo "Step 7: Installing custom nodes..."
 cd custom_nodes
 
@@ -72,8 +81,8 @@ done
 
 echo "✓ Custom nodes installed"
 
-# 6. Install custom node requirements
-echo "Step 6: Installing custom node requirements..."
+# 8. Install custom node requirements
+echo "Step 8: Installing custom node requirements..."
 for node_dir in */; do
     if [ -f "$node_dir/requirements.txt" ]; then
         echo "  Installing requirements for $node_dir"
@@ -81,12 +90,14 @@ for node_dir in */; do
     fi
 done
 
+deactivate
+
 echo "========================================="
 echo "✓ Installation Complete!"
 echo "========================================="
 echo ""
 echo "ComfyUI installed at: /workspace/ComfyUI"
-echo "Using system Python with pre-installed PyTorch"
+echo "Virtual environment: /workspace/ComfyUI/comfyvenv"
 echo ""
 echo "To start ComfyUI, run:"
 echo "  /workspace/start.sh"
