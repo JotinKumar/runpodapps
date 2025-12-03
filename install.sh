@@ -44,19 +44,19 @@ echo ""
 echo "[3.1/8] Ensuring model directories exist..."
 mkdir -p /workspace/ComfyUI/models/{checkpoints,diffusers,unet,loras,vae,embeddings,hypernetworks,controlnet,upscale_models,motion_models,poses,wildcards,other}
 cat > /workspace/ComfyUI/extra_model_paths.yaml << 'EOF'
-checkpoints: [/workspace/ComfyUI/models/checkpoints]
-diffusers: [/workspace/ComfyUI/models/diffusers]
-unet: [/workspace/ComfyUI/models/unet]
-loras: [/workspace/ComfyUI/models/loras]
-vae: [/workspace/ComfyUI/models/vae]
-embeddings: [/workspace/ComfyUI/models/embeddings]
-hypernetworks: [/workspace/ComfyUI/models/hypernetworks]
-controlnet: [/workspace/ComfyUI/models/controlnet]
-upscale_models: [/workspace/ComfyUI/models/upscale_models]
-motion_models: [/workspace/ComfyUI/models/motion_models]
-poses: [/workspace/ComfyUI/models/poses]
-wildcards: [/workspace/ComfyUI/models/wildcards]
-other: [/workspace/ComfyUI/models/other]
+checkpoints: /workspace/ComfyUI/models/checkpoints
+diffusers: /workspace/ComfyUI/models/diffusers
+unet: /workspace/ComfyUI/models/unet
+loras: /workspace/ComfyUI/models/loras
+vae: /workspace/ComfyUI/models/vae
+embeddings: /workspace/ComfyUI/models/embeddings
+hypernetworks: /workspace/ComfyUI/models/hypernetworks
+controlnet: /workspace/ComfyUI/models/controlnet
+upscale_models: /workspace/ComfyUI/models/upscale_models
+motion_models: /workspace/ComfyUI/models/motion_models
+poses: /workspace/ComfyUI/models/poses
+wildcards: /workspace/ComfyUI/models/wildcards
+other: /workspace/ComfyUI/models/other
 EOF
 echo "✓ Model paths configured"
 echo ""
