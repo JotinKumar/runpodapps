@@ -109,6 +109,10 @@ echo "Creating ComfyUI virtual environment..."
 python3 -m venv --system-site-packages comfyvenv
 source comfyvenv/bin/activate
 
+# Verify PyTorch is accessible
+echo "Verifying PyTorch installation..."
+python -c "import torch; print(f'PyTorch {torch.__version__} detected')"
+
 # Install ComfyUI requirements
 echo "Installing ComfyUI dependencies..."
 pip install --no-cache-dir -r requirements.txt
@@ -117,6 +121,10 @@ pip install --no-cache-dir GitPython opencv-python
 # Install compatible torchaudio to avoid library conflicts
 echo "Installing compatible torchaudio..."
 pip install --no-cache-dir torchaudio --index-url https://download.pytorch.org/whl/cu124
+
+# Verify installations
+echo "Verifying installations..."
+python -c "import torch, torchvision, torchaudio; print(f'✓ PyTorch {torch.__version__}'); print(f'✓ Torchvision {torchvision.__version__}'); print(f'✓ Torchaudio {torchaudio.__version__}')"
 
 # Install custom nodes
 echo "Installing ComfyUI custom nodes..."
