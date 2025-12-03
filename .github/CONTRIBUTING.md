@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your interest in contributing! This repository builds a compact, production-ready ComfyUI container optimized for RunPod.
+Thanks for your interest in contributing! This repository (`runpodapps`) builds a multi-app AI workspace with ComfyUI, Pinokio, Ollama, and Open WebUI - optimized for RunPod.
 
 ## Releases
 
@@ -61,7 +61,8 @@ Troubleshooting:
 ## Opening PRs
 
 - Keep changes focused and include a clear rationale.
-- Update `docs/conventions.md` if you change behavior that developers rely on.
+- Update `docs/context.md` if you change behavior that developers rely on.
+- Test all services start correctly (ComfyUI, Pinokio, Ollama, Open WebUI).
 
 ## License
 

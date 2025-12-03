@@ -39,6 +39,9 @@ RUN curl -sS https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
 ENV PATH=/usr/local/cuda/bin:${PATH}
 ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64
 
+# BuildKit cache configuration (used by docker-bake.hcl)
+ARG BUILDKIT_INLINE_CACHE=1
+
 # Clone ComfyUI to get requirements
 WORKDIR /tmp/build
 RUN git clone https://github.com/comfyanonymous/ComfyUI.git
@@ -47,7 +50,13 @@ RUN git clone https://github.com/comfyanonymous/ComfyUI.git
 WORKDIR /tmp/build/ComfyUI/custom_nodes
 RUN git clone https://github.com/ltdrdata/ComfyUI-Manager.git && \
     git clone https://github.com/kijai/ComfyUI-KJNodes && \
-    git clone https://github.com/MoonGoblinDev/Civicomfy
+    git clone https://github.com/MoonGoblinDev/Civicomfy && \
+    git clone https://github.com/hayden-fr/ComfyUI-Model-Manager && \
+    git clone https://github.com/WASasquatch/was-node-suite-comfyui && \
+    git clone https://github.com/cubiq/ComfyUI_essentials && \
+    git clone https://github.com/ltdrdata/ComfyUI-Impact-Pack && \
+    git clone https://github.com/rgthree/rgthree-comfy && \
+    git clone https://github.com/Suzie1/ComfyUI_Comfyroll_CustomNodes
 
 # Install PyTorch and all ComfyUI dependencies
 RUN python3.12 -m pip install --no-cache-dir \
@@ -60,10 +69,10 @@ RUN python3.12 -m pip install --no-cache-dir -r requirements.txt && \
 # Install custom node dependencies
 WORKDIR /tmp/build/ComfyUI/custom_nodes
 RUN for node_dir in */; do \
-        if [ -f "$node_dir/requirements.txt" ]; then \
-            echo "Installing requirements for $node_dir"; \
-            python3.12 -m pip install --no-cache-dir -r "$node_dir/requirements.txt" || true; \
-        fi; \
+    if [ -f "$node_dir/requirements.txt" ]; then \
+    echo "Installing requirements for $node_dir"; \
+    python3.12 -m pip install --no-cache-dir -r "$node_dir/requirements.txt" || true; \
+    fi; \
     done
 
 # ============================================================================
@@ -74,7 +83,7 @@ FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
 ENV IMAGEIO_FFMPEG_EXE=/usr/bin/ffmpeg
-ENV FILEBROWSER_CONFIG=/workspace/runpod-slim/.filebrowser.json
+ENV FILEBROWSER_CONFIG=/workspace/comfy/.filebrowser.json
 
 # Update and install runtime dependencies, CUDA, and common tools
 RUN apt-get update && \
@@ -116,6 +125,15 @@ RUN apt-get update && \
     && rm -rf /var/lib/apt/lists/* \
     && rm cuda-keyring_1.1-1_all.deb
 
+# Install Node.js 20.x for Pinokio and Open WebUI
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Ollama
+RUN curl -fsSL https://ollama.com/install.sh | sh
+
 # Copy Python packages and pip executables from builder stage
 COPY --from=builder /usr/local/lib/python3.12 /usr/local/lib/python3.12
 COPY --from=builder /usr/local/bin /usr/local/bin
@@ -134,17 +152,20 @@ ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64
 # Install Jupyter with Python kernel
 RUN pip install jupyter
 
+# Install Open WebUI
+RUN pip install open-webui
+
 # Configure SSH for root login
 RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
     sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config && \
     mkdir -p /run/sshd
 
-# Create workspace directory
-RUN mkdir -p /workspace/runpod-slim
-WORKDIR /workspace/runpod-slim
+# Create workspace directories
+RUN mkdir -p /workspace/comfy /workspace/pinokio /workspace/ollama /workspace/open-webui
+WORKDIR /workspace
 
 # Expose ports
-EXPOSE 8188 22 8888 8080
+EXPOSE 8188 22 8888 8080 42424 11434 3000
 
 # Copy and set up start script
 COPY start.sh /start.sh

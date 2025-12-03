@@ -1,10 +1,14 @@
 #!/bin/bash
 set -e  # Exit the script if any statement returns a non-true return value
 
-COMFYUI_DIR="/workspace/runpod-slim/ComfyUI"
-VENV_DIR="$COMFYUI_DIR/.venv"
+COMFYUI_DIR="/workspace/comfy/ComfyUI"
+COMFYUI_VENV="$COMFYUI_DIR/comfyvenv"
 FILEBROWSER_CONFIG="/root/.config/filebrowser/config.json"
-DB_FILE="/workspace/runpod-slim/filebrowser.db"
+DB_FILE="/workspace/comfy/filebrowser.db"
+PINOKIO_DIR="/workspace/pinokio"
+OLLAMA_DIR="/workspace/ollama"
+OPEN_WEBUI_DIR="/workspace/open-webui"
+OPEN_WEBUI_VENV="$OPEN_WEBUI_DIR/openwebuivenv"
 
 # ---------------------------------------------------------------------------- #
 #                          Function Definitions                                  #
@@ -106,6 +110,104 @@ start_jupyter() {
     echo "Jupyter Lab started"
 }
 
+# Setup and start Pinokio
+setup_pinokio() {
+    echo "Setting up Pinokio..."
+    
+    # Check if Pinokio is already installed
+    if [ ! -d "$PINOKIO_DIR/pinokio" ]; then
+        echo "First time setup: Installing Pinokio..."
+        cd "$PINOKIO_DIR"
+        
+        # Clone Pinokio repository
+        git clone https://github.com/pinokiocomputer/pinokio.git
+        cd pinokio
+        
+        # Install dependencies
+        npm install
+        
+        echo "Pinokio installation completed"
+    else
+        echo "Pinokio already installed"
+    fi
+}
+
+start_pinokio() {
+    echo "Starting Pinokio on port 42424..."
+    cd "$PINOKIO_DIR/pinokio"
+    
+    # Start Pinokio in the background
+    nohup npx electron . &> /workspace/pinokio/pinokio.log &
+    
+    echo "Pinokio started"
+}
+
+# Setup and start Ollama
+setup_ollama() {
+    echo "Setting up Ollama..."
+    
+    # Set Ollama home directory for models storage
+    export OLLAMA_MODELS="$OLLAMA_DIR/models"
+    mkdir -p "$OLLAMA_MODELS"
+    
+    echo "Ollama configured to store models in $OLLAMA_MODELS"
+}
+
+start_ollama() {
+    echo "Starting Ollama on port 11434..."
+    
+    # Start Ollama server in the background
+    export OLLAMA_MODELS="$OLLAMA_DIR/models"
+    export OLLAMA_HOST="0.0.0.0:11434"
+    nohup ollama serve &> /workspace/ollama/ollama.log &
+    
+    echo "Ollama started"
+    
+    # Wait a moment for Ollama to start
+    sleep 3
+}
+
+# Setup and start Open WebUI
+setup_open_webui() {
+    echo "Setting up Open WebUI..."
+    
+    # Create virtual environment if not present
+    if [ ! -d "$OPEN_WEBUI_VENV" ]; then
+        echo "Creating virtual environment for Open WebUI..."
+        python3.12 -m venv --system-site-packages "$OPEN_WEBUI_VENV"
+        source "$OPEN_WEBUI_VENV/bin/activate"
+        
+        # Ensure pip is available
+        python -m ensurepip --upgrade
+        python -m pip install --upgrade pip
+        
+        # Install Open WebUI in venv (already pre-installed in system, but keep isolated)
+        pip install --no-cache-dir open-webui
+        
+        echo "Open WebUI virtual environment created"
+    else
+        echo "Open WebUI virtual environment already exists"
+    fi
+}
+
+start_open_webui() {
+    echo "Starting Open WebUI on port 3000..."
+    
+    # Activate venv
+    source "$OPEN_WEBUI_VENV/bin/activate"
+    
+    # Set environment variables
+    export DATA_DIR="$OPEN_WEBUI_DIR/data"
+    export OLLAMA_BASE_URL="http://127.0.0.1:11434"
+    mkdir -p "$DATA_DIR"
+    
+    # Start Open WebUI in the background
+    cd "$OPEN_WEBUI_DIR"
+    nohup open-webui serve --host 0.0.0.0 --port 3000 &> /workspace/open-webui/open-webui.log &
+    
+    echo "Open WebUI started"
+}
+
 # ---------------------------------------------------------------------------- #
 #                               Main Program                                     #
 # ---------------------------------------------------------------------------- #
@@ -133,20 +235,32 @@ nohup filebrowser &> /filebrowser.log &
 
 start_jupyter
 
+# Setup and start Pinokio
+setup_pinokio
+start_pinokio
+
+# Setup and start Ollama
+setup_ollama
+start_ollama
+
+# Setup and start Open WebUI
+setup_open_webui
+start_open_webui
+
 # Create default comfyui_args.txt if it doesn't exist
-ARGS_FILE="/workspace/runpod-slim/comfyui_args.txt"
+ARGS_FILE="/workspace/comfy/comfyui_args.txt"
 if [ ! -f "$ARGS_FILE" ]; then
     echo "# Add your custom ComfyUI arguments here (one per line)" > "$ARGS_FILE"
     echo "Created empty ComfyUI arguments file at $ARGS_FILE"
 fi
 
 # Setup ComfyUI if needed
-if [ ! -d "$COMFYUI_DIR" ] || [ ! -d "$VENV_DIR" ]; then
+if [ ! -d "$COMFYUI_DIR" ] || [ ! -d "$COMFYUI_VENV" ]; then
     echo "First time setup: Installing ComfyUI and dependencies..."
     
     # Clone ComfyUI if not present
     if [ ! -d "$COMFYUI_DIR" ]; then
-        cd /workspace/runpod-slim
+        cd /workspace/comfy
         git clone https://github.com/comfyanonymous/ComfyUI.git
     fi
     
@@ -163,6 +277,12 @@ if [ ! -d "$COMFYUI_DIR" ] || [ ! -d "$VENV_DIR" ]; then
         "https://github.com/kijai/ComfyUI-KJNodes"
         "https://github.com/MoonGoblinDev/Civicomfy"
         "https://github.com/MadiatorLabs/ComfyUI-RunpodDirect"
+        "https://github.com/hayden-fr/ComfyUI-Model-Manager"
+        "https://github.com/WASasquatch/was-node-suite-comfyui"
+        "https://github.com/cubiq/ComfyUI_essentials"
+        "https://github.com/ltdrdata/ComfyUI-Impact-Pack"
+        "https://github.com/rgthree/rgthree-comfy"
+        "https://github.com/Suzie1/ComfyUI_Comfyroll_CustomNodes"
     )
 
     for repo in "${CUSTOM_NODES[@]}"; do
@@ -175,11 +295,11 @@ if [ ! -d "$COMFYUI_DIR" ] || [ ! -d "$VENV_DIR" ]; then
     done
     
     # Create and setup virtual environment if not present
-    if [ ! -d "$VENV_DIR" ]; then
+    if [ ! -d "$COMFYUI_VENV" ]; then
         cd $COMFYUI_DIR
         # Create venv with access to system packages (torch, numpy, etc. pre-installed in image)
-        python3.12 -m venv --system-site-packages $VENV_DIR
-        source $VENV_DIR/bin/activate
+        python3.12 -m venv --system-site-packages $COMFYUI_VENV
+        source $COMFYUI_VENV/bin/activate
 
         # Ensure pip is available in the venv (needed for ComfyUI-Manager)
         python -m ensurepip --upgrade
@@ -217,7 +337,7 @@ if [ ! -d "$COMFYUI_DIR" ] || [ ! -d "$VENV_DIR" ]; then
     fi
 else
     # Just activate the existing venv
-    source $VENV_DIR/bin/activate
+    source $COMFYUI_VENV/bin/activate
 
     echo "Checking for custom node dependencies..."
 
@@ -231,7 +351,7 @@ else
             # Check for requirements.txt
             if [ -f "requirements.txt" ]; then
                 echo "Installing requirements.txt for $node_dir"
-                uv pip install --no-cache -r requirements.txt
+                pip install --no-cache-dir -r requirements.txt
             fi
             
             # Check for install.py
@@ -243,7 +363,7 @@ else
             # Check for setup.py
             if [ -f "setup.py" ]; then
                 echo "Running setup.py for $node_dir"
-                uv pip install --no-cache -e .
+                pip install --no-cache-dir -e .
             fi
         fi
     done
@@ -257,16 +377,16 @@ if [ -s "$ARGS_FILE" ]; then
     CUSTOM_ARGS=$(grep -v '^#' "$ARGS_FILE" | tr '\n' ' ')
     if [ ! -z "$CUSTOM_ARGS" ]; then
         echo "Starting ComfyUI with additional arguments: $CUSTOM_ARGS"
-        nohup python main.py $FIXED_ARGS $CUSTOM_ARGS &> /workspace/runpod-slim/comfyui.log &
+        nohup python main.py $FIXED_ARGS $CUSTOM_ARGS &> /workspace/comfy/comfyui.log &
     else
         echo "Starting ComfyUI with default arguments"
-        nohup python main.py $FIXED_ARGS &> /workspace/runpod-slim/comfyui.log &
+        nohup python main.py $FIXED_ARGS &> /workspace/comfy/comfyui.log &
     fi
 else
     # File is empty, use only fixed args
     echo "Starting ComfyUI with default arguments"
-    nohup python main.py $FIXED_ARGS &> /workspace/runpod-slim/comfyui.log &
+    nohup python main.py $FIXED_ARGS &> /workspace/comfy/comfyui.log &
 fi
 
 # Tail the log file
-tail -f /workspace/runpod-slim/comfyui.log
+tail -f /workspace/comfy/comfyui.log

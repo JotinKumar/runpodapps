@@ -67,22 +67,7 @@ jobs:
           # Export TAG for docker-bake.hcl variable override
           echo "TAG=${RELEASE_VERSION}" >> $GITHUB_ENV
 
-      - name: Build and push 5090 image
-        uses: docker/bake-action@v5
-        env:
-          TAG: ${{ env.RELEASE_VERSION }}
-        with:
-          push: true
-          files: ./docker-bake.hcl
-          targets: |
-            rtx5090
-
-      - name: Clean up Docker build cache
-        run: |
-          docker builder prune -af --filter "until=1h"
-          docker system prune -af --volumes
-
-      - name: Build and push regular image
+      - name: Build and push image
         uses: docker/bake-action@v5
         env:
           TAG: ${{ env.RELEASE_VERSION }}
@@ -105,12 +90,12 @@ jobs:
       - name: Release Summary
         run: |
           echo "🚀 Release completed!"
+          echo "Repository: runpodapps"
           echo "Version: ${{ env.RELEASE_VERSION }}"
           echo "Docker Images:"
-          echo " - ${{ env.IMAGE_REF }}:${{ env.RELEASE_VERSION }} (regular)"
-          echo " - ${{ env.IMAGE_REF }}:latest (regular)"
-          echo " - ${{ env.IMAGE_REF }}:${{ env.RELEASE_VERSION }}-5090 (RTX 5090)"
-          echo " - ${{ env.IMAGE_REF }}:latest-5090 (RTX 5090)"
+          echo " - ${{ env.IMAGE_REF }}:${{ env.RELEASE_VERSION }}"
+          echo " - ${{ env.IMAGE_REF }}:latest"
+          echo "Services: ComfyUI, Pinokio, Ollama, Open WebUI, FileBrowser, JupyterLab, SSH"
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "Trigger: Manual workflow dispatch"
           else
