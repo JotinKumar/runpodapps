@@ -164,25 +164,25 @@ docker push yourusername/runpodapps:v1.0.0
 ### Step 3: Configure Template Settings
 
 #### Basic Settings
-- **Template Name**: `ComfyUI Multi-App Workspace` (or your preference)
+- **Template Name**: `Multi-App Workspace`
 - **Template Type**: Select **"Docker"**
-- **Container Image**: `yourusername/runpodapps:latest`
+- **Container Image**: `yourusername/runpodapps:v1.0.0`
 
 #### Container Configuration
-- **Container Disk**: `20 GB` (minimum, increase for models)
+- **Container Disk**: `50 GB` (minimum, increase for models)
 - **Volume Path**: `/workspace`
-- **Volume Mount Path**: `/workspace`
 
 #### Expose HTTP Ports
-Add these ports (one per line):
-```
-8188
-42424
-11434
-3000
-8080
-8888
-```
+Add these ports (format: `port/http` with name):
+
+| Port | Name |
+|------|------|
+| `8188` | ComfyUI |
+| `42424` | Pinokio |
+| `11434` | Ollama |
+| `3000` | OpenWebUI |
+| `8080` | FileBrowser |
+| `8888` | JupyterLab |
 
 #### Expose TCP Ports
 ```
