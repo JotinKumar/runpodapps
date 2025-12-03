@@ -41,16 +41,16 @@ Use Docker Buildx Bake with the provided HCL file.
 
 - `regular` (default production):
   - Dockerfile: `Dockerfile`
-  - Tags: `jotinkumar/runpodapps:${TAG}` and `jotinkumar/runpodapps:latest` (TAG defaults to `slim`)
+  - Tags: `yourusername/runpodapps:${TAG}` and `yourusername/runpodapps:latest` (TAG defaults to `slim`)
   - Platform: `linux/amd64`
   - Output: Pushes to registry
 - `dev` (local testing):
   - Dockerfile: `Dockerfile`
-  - Tag: `jotinkumar/runpodapps:dev`
+  - Tag: `yourusername/runpodapps:dev`
   - Output: local docker image (not pushed)
 - `devpush` (development push):
   - Dockerfile: `Dockerfile`
-  - Tag: `jotinkumar/runpodapps:dev`
+  - Tag: `yourusername/runpodapps:dev`
   - Output: Pushes to registry
 
 Example commands:
@@ -193,7 +193,7 @@ Recognized at runtime by the start scripts:
     -e PUBLIC_KEY="$(cat ~/.ssh/id_rsa.pub)" \
     -e JUPYTER_PASSWORD=yourtoken \
     -v "$PWD/workspace":/workspace \
-    jotinkumar/runpodapps:dev
+    yourusername/runpodapps:dev
   ```
 
 - Mount a host `workspace` directory to persist all apps, models, and configurations.
@@ -247,7 +247,7 @@ Recognized at runtime by the start scripts:
 ## Release & Tagging
 
 - Default tag base is `slim` via `TAG` in `docker-bake.hcl`.
-- Regular builds create two tags: `jotinkumar/runpodapps:${TAG}` and `jotinkumar/runpodapps:latest`.
+- Regular builds create two tags: `yourusername/runpodapps:${TAG}` and `yourusername/runpodapps:latest`.
 - Use semantic versioning for production releases: `TAG=v1.0.0 docker buildx bake -f docker-bake.hcl regular --push`.
 - Keep `README.md` ports, features, and custom nodes list in sync when making changes.
 

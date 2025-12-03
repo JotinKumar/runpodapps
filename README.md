@@ -102,7 +102,7 @@ docker run --rm -it --gpus all \
   -v comfyui-workspace:/workspace \
   -e PUBLIC_KEY="$(cat ~/.ssh/id_rsa.pub)" \
   -e JUPYTER_PASSWORD=yourtoken \
-  jotinkumar/runpodapps:dev
+  yourusername/runpodapps:dev
 ```
 
 #### 2. Build & Push Production Image
@@ -119,10 +119,10 @@ docker buildx bake -f docker-bake.hcl regular --push
 ```
 
 This creates two tags:
-- `jotinkumar/runpodapps:v1.0.0` (or your TAG value)
-- `jotinkumar/runpodapps:latest`
+- `yourusername/runpodapps:v1.0.0` (or your TAG value)
+- `yourusername/runpodapps:latest`
 
-**Note:** Image is published as `jotinkumar/runpodapps` on Docker Hub.
+**Note:** Update `docker-bake.hcl` to use your Docker Hub username instead of `yourusername/runpodapps`.
 
 #### 3. Build Multi-Platform (Optional)
 
@@ -136,14 +136,14 @@ docker buildx bake -f docker-bake.hcl regular --push --set "*.platform=linux/amd
 
 ```bash
 # Build the image
-docker build -t jotinkumar/runpodapps:latest .
+docker build -t yourusername/runpodapps:latest .
 
 # Tag with version
-docker tag jotinkumar/runpodapps:latest jotinkumar/runpodapps:v1.0.0
+docker tag yourusername/runpodapps:latest yourusername/runpodapps:v1.0.0
 
 # Push to Docker Hub
-docker push jotinkumar/runpodapps:latest
-docker push jotinkumar/runpodapps:v1.0.0
+docker push yourusername/runpodapps:latest
+docker push yourusername/runpodapps:v1.0.0
 ```
 
 ---
@@ -154,7 +154,7 @@ docker push jotinkumar/runpodapps:v1.0.0
 
 1. Build and push your image to Docker Hub (see above)
 2. Verify the image is public or accessible to RunPod
-3. Note your full image name: `jotinkumar/runpodapps:latest`
+3. Note your full image name: `yourusername/runpodapps:latest`
 
 ### Step 2: Create Template on RunPod
 
@@ -166,7 +166,7 @@ docker push jotinkumar/runpodapps:v1.0.0
 #### Basic Settings
 - **Template Name**: `ComfyUI Multi-App Workspace` (or your preference)
 - **Template Type**: Select **"Docker"**
-- **Container Image**: `jotinkumar/runpodapps:latest`
+- **Container Image**: `yourusername/runpodapps:latest`
 
 #### Container Configuration
 - **Container Disk**: `20 GB` (minimum, increase for models)

@@ -36,7 +36,7 @@ Troubleshooting releases:
 
 Releases are tag-driven and/or GitHub Releases. The workflow builds and pushes:
 
-- `jotinkumar/runpodapps:vX.Y.Z` and `jotinkumar/runpodapps:latest`
+- `yourusername/runpodapps:vX.Y.Z` and `yourusername/runpodapps:latest`
 - `runpod/comfyui:vX.Y.Z-5090` and `runpod/comfyui:latest-5090`
 
 Steps:

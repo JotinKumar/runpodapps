@@ -44,7 +44,7 @@ jobs:
 
       - name: Set environment variables
         run: |
-          echo "IMAGE_REF=jotinkumar/runpodapps" >> $GITHUB_ENV
+          echo "IMAGE_REF=yourusername/runpodapps" >> $GITHUB_ENV
 
           # Determine version based on trigger type
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
