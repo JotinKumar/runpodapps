@@ -4,7 +4,7 @@ set -e  # Exit the script if any statement returns a non-true return value
 COMFYUI_DIR="/workspace/comfy/ComfyUI"
 COMFYUI_VENV="$COMFYUI_DIR/comfyvenv"
 FILEBROWSER_CONFIG="/root/.config/filebrowser/config.json"
-DB_FILE="/workspace/comfy/filebrowser.db"
+DB_FILE="/workspace/filebrowser.db"
 PINOKIO_DIR="/workspace/pinokio"
 OLLAMA_DIR="/workspace/ollama"
 OPEN_WEBUI_DIR="/workspace/open-webui"
